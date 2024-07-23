@@ -1,0 +1,74 @@
+`timescale 1ns / 1ps
+
+module lif_1(
+    input clk,n_1,n_2,n_3,
+    output n_4, n_5, n_6, n_7, n_8
+);
+
+//Weights
+wire [2:0]w14=3'b011;
+wire [2:0]w15=3'b001;
+wire [2:0]w16=3'b100;
+wire [2:0]w24=3'b011;
+wire [2:0]w25=3'b010;
+wire [2:0]w26=3'b011;
+wire [2:0]w34=3'b010;
+wire [2:0]w35=3'b011;
+wire [2:0]w36=3'b100;
+wire [2:0]w47=3'b011;
+wire [2:0]w48=3'b010;
+wire [2:0]w57=3'b010;
+wire [2:0]w58=3'b100;
+wire [2:0]w67=3'b011;
+wire [2:0]w68=3'b010;
+
+//Neurons 4,5,6
+neuron n4(.clk(clk), .neuron_in1(n_1), .neuron_in2(n_2), .neuron_in3(n_3), .w3i(w34), .w2i(w24), .w1i(w14), .neuron_out(n_4));
+neuron n5(.clk(clk), .neuron_in1(n_1), .neuron_in2(n_2), .neuron_in3(n_3), .w3i(w35), .w2i(w25), .w1i(w15), .neuron_out(n_5));
+neuron n6(.clk(clk), .neuron_in1(n_1), .neuron_in2(n_2), .neuron_in3(n_3), .w3i(w36), .w2i(w26), .w1i(w16), .neuron_out(n_6));
+
+//Neuron 7,8
+neuron n7(.clk(clk), .neuron_in1(n_4), .neuron_in2(n_5), .neuron_in3(n_6), .w3i(w67), .w2i(w57), .w1i(w47), .neuron_out(n_7));
+neuron n8(.clk(clk), .neuron_in1(n_4), .neuron_in2(n_5), .neuron_in3(n_6), .w3i(w68), .w2i(w58), .w1i(w48), .neuron_out(n_8));
+
+endmodule
+
+module neuron (clk, neuron_in1, neuron_in2, neuron_in3, w3i, w2i, w1i, neuron_out);
+
+  // Neuron Inputs Declaration
+  input wire [2:0] w1i;
+  input wire [2:0] w2i;
+  input wire [2:0] w3i;
+  input wire clk;
+  input wire neuron_in1;
+  input wire neuron_in2;
+  input wire neuron_in3;
+  
+  //Neuron Outputs Declaration
+  output neuron_out;
+  
+  // Neuron Constants
+  reg [4:0] V_rest =5'b00110;
+  reg [4:0] V_leak = 5'b00001;
+  reg K_syn = 1'b1;
+  reg [4:0] V_thresh = 5'b01110;
+  reg [4:0] V_i = 5'b00110;
+  reg neuron_i_reg;
+  
+  // Neuron Dynamics
+  always @(posedge clk)
+  begin
+        neuron_i_reg = 1'b0; 
+        V_i = V_i + K_syn * (w1i*neuron_in1 + w2i*neuron_in2 + w3i*neuron_in3) - V_leak;
+        if (V_i >= V_thresh) 
+        begin
+          V_i = V_rest;
+          neuron_i_reg = 1'b1;
+        end
+        if (V_i < V_rest) 
+        begin
+          V_i = V_rest;
+        end
+  end
+  assign neuron_out = neuron_i_reg;
+endmodule

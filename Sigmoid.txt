@@ -1,0 +1,136 @@
+`timescale 1ns / 1ps
+module ssg_1(
+input signed [11:0]x,
+    output [11:0]y
+    );
+
+
+    wire [11:0]k=12'b100000000000;
+    wire [11:0]t=12'b110001000000;
+    wire [11:0]w=12'b001111000000;
+  wire [11:0]r;
+  wire [11:0]a;
+  wire [11:0]p;
+  wire [11:0]q;
+  wire [11:0]b;
+  wire [11:0]j;
+  BoothMulti a1(.X(x),.Y(x),.Z(a));
+  BoothMulti a2(.X(a),.Y(x),.Z(r));
+  sft_1 a3(.x(x),.y(p));
+  sft_2 a4(.x(r),.y(j));
+  sft_2 a5(.x(j),.y(b));
+  sft_2 a6(.x(b),.y(q));
+   wire [11:0]m;
+   wire [11:0]n;
+   fp_1 a7(.a(q),.b(p),.c(m));
+   fp_2 a8(.a(m),.b(k),.c(n));
+   wire[11:0]d;
+   multiplexer a9(.in0(n),.in1(t),.x(x),.out(d));  
+   multiplexer_1 a10(.in0(d),.in1(w),.x(x),.out(y));  
+endmodule
+//Multiplier
+module BoothMulti(X, Y, Z);
+       input signed [11:0] X,Y;
+       output signed [11:0] Z;
+    assign Z = X*Y;
+endmodule
+//Multiplier
+module BoothMulti2(X, Y, Z);
+       input signed [11:0] X;
+       input signed [11:0] Y;
+       output signed [11:0] Z;
+       
+    assign Z = X*Y;
+endmodule
+//Adder 
+ module fp_1(
+    input [11:0] a,
+    input [11:0] b,
+    output reg [11:0] c
+    );
+    always @(*) 
+    begin
+    c = a+{b,8'b00000000};
+    end
+endmodule
+
+//Adder 
+ module fp_2(
+    input [11:0] a,
+    input [11:0] b,
+    output reg [11:0] c
+    );
+    always @(*) 
+    begin
+    c = a+b;
+    end
+endmodule
+ 
+ //Multiplexer
+ module multiplexer (
+  input [11:0] in0,  // Data input 0
+  input [11:0]in1,  // Data input 1
+  input signed [11:0]x,
+   // Select line
+  output reg [11:0]out  // Output
+);
+always@(*)
+if(x<0)
+begin
+ if (x<(12'b111111111111))
+     begin
+     out=in0;
+     end
+ end
+ else
+ begin
+ if(x>=(12'b000000010000))
+     begin
+     out=in1;
+     end
+  else 
+     begin
+     out=in0;
+     end
+end
+endmodule
+
+ //Multiplexer
+ module multiplexer_1(
+  input [11:0] in0,  // Data input 0
+  input [11:0]in1,  // Data input 1
+  input signed [11:0]x, // Select line
+  output reg [11:0]out  // Output
+);
+always@(*)
+//if(x<0)
+//begin
+    if (x<12'b111111110001)
+        begin
+        out=in1;
+        end
+     else
+         begin 
+         out=in0;
+       end
+// end
+//  else 
+//     begin
+//     out=in0;
+//     end
+
+endmodule
+//shifter
+module sft_1(
+input [11:0]x,
+output [11:0]y
+);
+assign y=x/4;
+endmodule
+//shifter
+module sft_2(
+input [11:0]x,
+output[11:0]y
+);
+assign y=x/4;
+endmodule

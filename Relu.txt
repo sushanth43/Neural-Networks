@@ -1,0 +1,41 @@
+timescale ins / 1ps
+
+module Relu_1(
+
+input [3:0] x,
+
+output [3:0] y );
+
+comparator (. y(y) ,. x(x) ) ;
+
+endmodule
+
+module comparator(
+
+input [3/0] x,
+
+output reg [3/0] y );
+
+always@(x)
+
+begin
+
+if (x>0)
+
+begin
+
+y = x
+
+end
+
+else
+
+begin
+
+y = 0
+
+end
+
+end
+
+endmodule

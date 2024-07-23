@@ -1,0 +1,58 @@
+//FIR FILTER IMPLEMENTATION
+`timescale 1ns / 1ps
+module fcc_s(
+input [3:0]d_in,
+input clk,
+input reset,
+output  [8:0]d_out
+    );
+    reg [3:0]s_1,s_2,s_3;
+    always@(posedge clk )
+    begin
+    if (!reset)
+    begin
+    s_3<=s_2;
+    s_2<=s_1;
+    s_1<=d_in;
+    end
+    end
+    always@(posedge clk or negedge clk)
+    begin
+    if (reset)
+    begin
+    s_1=8'b00000000;
+    s_2=8'b00000000;
+    s_3=8'b00000000;
+end
+ end
+   wire [7:0]y_1,y_2,y_3;
+    wire [8:0]d;
+    reg [3:0]c_1=4'b0001;
+    reg [3:0]c_2=4'b0010;
+    reg [3:0]c_3=4'b0011;
+
+multiplier m0 (.s(s_1),.c(c_1),.y(y_1));
+multiplier m1 (.s(s_2),.c(c_2),.y(y_2));
+multiplier m2  (.s(s_3),.c(c_3),.y(y_3));
+adder a1 (.p(y_1),.q(y_2),.sum(d));
+adder a2 (.p(y_3),.q(d),.sum(d_out)); 
+
+
+endmodule
+ module multiplier(
+ input [3:0]s,
+ input [3:0]c,
+ output [7:0]y
+ );
+ assign y=s*c;
+ endmodule  
+ 
+ module adder(
+ output  [8:0]sum,
+ input [7:0]p,
+ input [7:0]q
+  );
+assign sum=q+p;
+
+  
+ endmodule
